@@ -1,0 +1,37 @@
+- name: dd deploy
+  hosts: '{{ hosts }}'
+  tasks:
+
+   - name: deploy dd.panda.tv.flume code
+     synchronize: src=dd.panda.tv.flume/ dest=/data/htdocs/dd.panda.tv.flume/ rsync_opts=--delete,--group,--owner,--perms,--times,--compress,--exclude='.git*',--exclude='.svn*',--exclude='*.swp'
+
+   - name: chown www:www /data/htdocs/dd.panda.tv.flume
+     shell: chown www:www -R /data/htdocs/dd.panda.tv.flume
+
+   - name: chmod +x /data/htdocs/dd.panda.tv.flume/apache-flume-1.6.0-bin/bin/*
+     shell: chmod +x /data/htdocs/dd.panda.tv.flume/apache-flume-1.6.0-bin/bin/*
+
+   - name: copy flume_supervisor_config.sh
+     copy: src=flume_supervisor_config.sh dest=/data/htdocs/dd.panda.tv.flume/ owner=root group=root mode=755
+
+   - name: sh flume_supervisor_config.sh
+     shell: cd /data/htdocs/dd.panda.tv.flume/;sh flume_supervisor_config.sh
+
+
+   - name: link dd.panda.tv.conf
+     file: src=/data/htdocs/dd.panda.tv.flume/config/dd.panda.tv.conf dest=/usr/local/nginx/conf/include/dd.panda.tv.conf state=link
+
+   - name: link dd.panda.tv.ssl.conf
+     file: src=/data/htdocs/dd.panda.tv.flume/config/dd.panda.tv.ssl.conf dest=/usr/local/nginx/conf/include/dd.panda.tv.ssl.conf state=link
+
+#   - name: sed s/ssl\/dd/certs\dd/g
+#     shell: sed -i  's/ssl\/dd/certs\/dd/g' /data/htdocs/dd.panda.tv.flume/config/dd.panda.tv.ssl.conf
+
+#   - name: nginx restarted
+#     service: name=nginx  state=restarted
+
+   - name: nginx reloaded
+     service: name=nginx  state=reloaded
+
+   - name: supervisord restart
+     service: name=supervisord  state=restarted

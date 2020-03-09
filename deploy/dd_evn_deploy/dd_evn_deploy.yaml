@@ -1,0 +1,51 @@
+- name: dd deploy
+  hosts: '{{ hosts }}'
+  tasks:
+   - name: groupadd www
+     group: name=www  state=present gid=3043
+
+   - name: useradd www
+     user: name=www groups=www state=present uid=3043
+
+   - name: easy_install supervisor
+     shell: easy_install supervisor
+
+   - name: mkdir /data/logs/flume
+     file: path=/data/logs/flume owner=root group=root state=directory
+
+   - name: mkdir /data/logs/flume.pos
+     file: path=/data/logs/flume.pos owner=root group=root state=directory
+
+   - name: mkdir  /data/logs/nginx/
+     file: path=/data/logs/nginx/ owner=root group=root state=directory
+
+   - name: mkdir /data/logs/nginx/tmp/
+     file: path=/data/logs/nginx/tmp/ owner=root group=root state=directory
+
+   - name: mkdir /data/htdocs/dd.panda.tv.flume/
+     file: path=/data/htdocs/dd.panda.tv.flume/ owner=www group=www state=directory
+
+   - name: copy dd.panda.tv.crt
+     copy: src=dd.panda.tv.crt dest=/usr/local/nginx/conf/certs/ owner=root group=root mode=755
+
+   - name: copy dd.panda.tv.key
+     copy: src=dd.panda.tv.key dest=/usr/local/nginx/conf/certs/ owner=root group=root mode=755
+
+   - name: copy dd.panda.tv.ca
+     copy: src=dd.panda.tv.ca dest=/usr/local/nginx/conf/certs/ owner=root group=root mode=755
+
+   - name: copy dhparams.pem
+     copy: src=dhparams.pem dest=/usr/local/nginx/conf/certs/ owner=root group=root mode=755
+
+   - name: copy nginx.logrotate
+     copy: src=nginx.logrotate dest=/usr/local/nginx/conf/ owner=root group=root mode=755
+
+   - name: crontab nginx.logrotate
+     cron: name="nginx 日志切割" minute="0" hour="0" job="/usr/sbin/logrotate -f /usr/local/nginx/conf/nginx.logrotate" cron_file="nginx.cron" user='root'
+
+
+   - name: deploy jdk
+     synchronize: src=jdk1.7.0_80 dest=/usr/local/
+
+   - name:  chown root:root -R /usr/local/jdk1.7.0_80
+     shell: chown root:root -R /usr/local/jdk1.7.0_80

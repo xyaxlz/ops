@@ -1,0 +1,36 @@
+# 要分析的日志文件列表， 支持 %Y %m %d %h  %m %s这样的时间表达式
+#报警组###日志###匹配关键字###出现次数
+g-magi###/data/projlogs/bikini/%Y%m/%d/*.%H###error###3
+g-magi###/data/projlogs/magi/%Y%m/%d/*.%H###error###3
+g-relation###/data/projlogs/relation/%Y%m/%d/*%H###recover panic###10
+g-itachi###/data/projlogs/itachi/%Y%m/%d/*.%H###decoder err|recover panic###20
+g-uconfig###/data/projlogs/uconfig/%Y%m/%d/other.%H###error###5
+g-apiproxy###/data/projlogs/apiproxy/%Y%m/%d/*.%H###\[error\]###5
+g-villa###/data/projlogs/villa_go/%Y%m/%d/*.%H###error###100
+g-hrp###/data/projlogs/hr-pandaren/_all/%Y%m/%d/%H###error###3
+lijunfei###/data/projlogs/viewfinder/%Y%m/%d/*.%H###error\:###3
+lijunfei###/data/projlogs/sandglass/%Y%m/%d/*.%H###\[error\]###3
+g-count###/data/projlogs/count/%Y%m/%d/*.%H###error###3
+g-ban###/data/projlogs/ban/_all/%Y%m/%d/%H###error###3
+g-breeder###/data/projlogs/breeder/_all/%Y%m/%d/%H###error###1
+g-refresherorb###/data/projlogs/refresherorb/_all/%Y%m/%d/%H###^((?!(404|Classnotfound)).)*error((?!(404|Classnotfound)).)*$###100
+g-bee###/data/projlogs/bee/_all/%Y%m/%d/.%H###Err_Res###5
+g-oauth###/data/projlogs/oauth/_all/%Y%m/%d/.%H###\[error\]###1
+g-buffon###/data/projlogs/buffon/_all/%Y%m/%d/%H###error###10
+g-buffon###/data/projlogs/buffon_go/%Y%m/%d/*.%H###error###10
+g-count###/data/nginxlogs/count.pdtv.io/%Y%m/%d/error_%H.log###\[error\]###30
+g-game360###/data/projlogs/partner-360game/%Y%m/%d/*.%H###error###3
+g-m-prop###/data/projlogs/prop.api.m/_all/%Y%m/%d/%H###error###20
+g-m###/data/projlogs/down.api.m/_all/%Y%m/%d/%H###error###10
+g-m###/data/projlogs/feedback/_all/%Y%m/%d/%H###error###5
+g-m###/data/projlogs/report/_all/%Y%m/%d/%H###error###5
+g-pandaren###/data/projlogs/pandaren/_all/%Y%m/%d/%H###(w|work)(?!53)\d+v\.[\w\s\[\]\(\)\.\-\/:,]+\[error\]\s+(?!517\s\[Action\snot\sFound\]|profile\sserver\sreturn|aligreen\surl)###50
+g-m###/data/projlogs/api.m/_all/%Y%m/%d/%H###error\]\s(?!profile\sserver\sreturn)###30
+g-ibag###/data/projlogs/ibag_go/%Y%m/%d###error###5
+g-bag.gate###/data/projlogs/bag/_all/%Y%m/%d###error###10
+lijunfei###/data/projlogs/ivern/%Y%m/%d###\[error\]###1
+jiangshouchao###/data/projlogs/vote_go/%Y%m/%d###\[error\]###1
+wangtong###/data/projlogs/shop/_all/%Y%m/%d###\[error\]###1
+g-pharah###/data/projlogs/pharah/_all/%Y%m/%d###error###10
+g-pharah###/data/projlogs/pharah_console/_all/%Y%m/%d###error###10
+g-mall###/data/projlogs/mall/_all/%Y%m/%d/%H###\[error\]((?!\[slow\]\serrmsg|curlerr|rucsession\sserver).)*$###1

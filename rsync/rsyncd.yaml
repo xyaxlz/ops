@@ -1,0 +1,18 @@
+- name: rsync config
+  hosts: '{{ hosts }}'
+  tasks:
+
+     - name: copy rsyncd.conf
+       copy: src=rsyncd.conf dest=/home/server_config/rsync/ group=root owner=root
+
+     - name: copy  rsyncd.secrets
+       copy: src=rsyncd.secrets dest=/home/server_config/rsync/ group=root owner=root mode=600
+
+     - name: rsyncd restart
+       service: name=rsyncd state=restarted
+
+     - name: copy  067.sync.default
+       copy: src=067.sync.default dest=/home/server_config/iptables_rules group=root owner=root
+
+     - name: iptables restart
+       service: name=iptables state=restarted

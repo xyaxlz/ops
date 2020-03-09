@@ -1,0 +1,9 @@
+#注意脚本检查的raid的序列号，
+#系统情况为系统盘为raid1,数据盘raid5
+#结合zabbix检查的是raid5的情况
+
+
+#执行
+#
+#ansible -i add copyfile.yaml -K -k -s
+

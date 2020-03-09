@@ -1,0 +1,41 @@
+- name: deploy ci os setting
+  hosts: '{{ hosts }}'
+  tasks:
+    - name: useradd ci
+      user: name=ci uid=600
+
+    - name: mkdir  /home/ci/.ssh/
+      file: path=/home/ci/.ssh/ state=directory owner=ci group=ci mode=700
+
+    - name: touch ci authorized_keys
+      file: path=/home/ci/.ssh/authorized_keys state=touch owner=ci group=ci mode=600
+
+    - name:  copy ci_id_rsa.pub
+      copy: src=ci_id_rsa.pub  dest=/tmp/
+
+    - name: bak authorized_keys
+      shell: cp /home/ci/.ssh/authorized_keys /home/ci/.ssh/authorized_keys_{{baktime}}
+
+    - name: sed /ci/d
+      lineinfile: dest=/home/ci/.ssh/authorized_keys regexp=ci state=absent
+
+    - name: config authorized_keys
+      shell:  cat /tmp/ci_id_rsa.pub  >> /home/ci/.ssh/authorized_keys
+
+    - name: chown ci.ci .ssh
+      file: path=/home/ci/.ssh owner=ci group=ci mode=700
+
+    - name: chown 600 .ssh/authorized_keys
+      file: path=/home/ci/.ssh/authorized_keys  owner=ci group=ci mode=600
+
+#    - name: disable sudo requiretty
+#      lineinfile: dest=/etc/sudoers regexp='^Defaults    requiretty' line='#Defaults    requiretty' validate='visudo -cf %s'
+
+    - name: disable sudo requiretty
+      shell: sed -i '/^Defaults    requiretty/ s/^/#/g' /etc/sudoers
+
+#    - name: config ci sudo
+#      lineinfile: dest=/etc/sudoers regexp='ci' line="ci ALL=(ALL) NOPASSWD:ALL" validate='visudo -cf %s' backup=yes
+    - name: config ci sudo
+      lineinfile: dest=/etc/sudoers  line="ci ALL=(ALL) NOPASSWD:ALL" validate='visudo -cf %s' backup=yes
+

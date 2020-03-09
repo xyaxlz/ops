@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCk4dvkNM1lsyBMd7dIiU5azXaqSfmhlEcHKGgl6Xxjg5AeMFEyoJX94dGe733zTFvAqOAgFQ8XFOoYXzVeS/r8AuBigBrpVnO0Vuke6t3PjofOJNIS++JO8rzru6ZvHIT+qbN8VJMoeXi4HqT/JYAquqJTgnkMSH3T9En2utF1gV/Zz9fF+dgfvj9bXQLOWqDRNRUOVD/+aTEQKTJ7KeeXsXAD1fPx9TPbxAv+auJS+hsafRMuJ6yp5KEE8sgPqsqhKK6A59J4ml1Kd3fkd0xufe0KdbXPrcgBi0ot0Ezy17Oit4mHriis3Zpeubbfk4UKkFOql+AFXAZxn/qy8ZPP root@spark1v.bigdata.bjac.pdtv.it" >>  /root/.ssh/authorized_keys
+chmod 600 /root/.ssh/authorized_keys

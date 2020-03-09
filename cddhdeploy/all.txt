@@ -1,0 +1,97 @@
+
+------------api服务 打包部署-------------
+cd ~/src/live-api/live-quiz-server/api-server/
+git pull
+gradle clean
+gradle build -x test
+mv build/libs/api-server*.jar build/libs/api-server.jar
+scp build/libs/api-server.jar chong@$api:~/src
+scp ../conf/api-server-prod.properties  $api:~/src/
+
+启动
+cd ~/src/
+ps -ef | grep api-server | grep -v grep | awk '{print $2}' | xargs kill -9
+nohup java -jar -Dspring.config.location=api-server-prod.properties api-server.jar > log/api-server.log &
+
+
+--------------cms服务  打包部署-------------
+cd ~/src/live-api/live-quiz-server/api-server/
+git pull
+gradle clean
+gradle build -x test
+mv build/libs/api-server*.jar build/libs/api-server.jar
+scp build/libs/api-server-1.0.jar $cms:~/src
+scp ../conf/api-server-prod.properties  $cms:~/src/
+
+启动
+cd ~/src/
+ps -ef | grep api-server | grep -v grep | awk '{print $2}' | xargs kill -9
+nohup java -jar -Dspring.config.location=api-server-prod.properties api-server.jar > log/api-server.log &
+
+
+-----------cms前端--------------
+cd ~/src/cms-front
+git pull
+npm install --verbose
+npm run build
+cp -r dist/* $cms:~/src/cms-web/
+需要配置nginx 
+++++++++++
+
+-----------answer服务------------
+cd ~/src/live-answer
+git pull
+cd ../
+zip -r live-answer.zip live-answer
+scp live-answer.zip $answer:~/src/
+
+启动
+cd ~/src/
+unzip -o live-answer.zip
+cd live-answer
+npm install
+sh restart_all.sh
+
+
+-------------conf服务------------
+cd ~/src/live-conf
+git pull
+cd ../
+zip -r live-conf.zip live-conf
+scp live-conf.zip $conf:~/src/
+
+启动
+cd ~/src/
+unzip -o live-conf.zip
+cd live-conf
+npm install
+sh restart_all.sh
+
+---------------msg服务-----------------
+cd ~/src/live-msg
+git pull
+cd ../
+zip -r live-msg.zip live-msg
+scp live-msg.zip $msg:~/src/
+
+启动
+cd ~/src/
+unzip -o live-msg.zip
+cd live-msg
+npm install
+sh restart_all.sh
+
+--------------弹幕服务---------------
+cd ~/src/barrage-server
+git pull
+cd ../
+zip -r barrage-server.zip barrage-server
+scp barrage-server.zip $barrage:~/src/
+
+启动
+cd ~/src/
+unzip -o barrage-server.zip
+cd barrage-server
+npm install node-rdkafka
+npm install
+npm restart 

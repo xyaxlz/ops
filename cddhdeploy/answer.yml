@@ -1,0 +1,13 @@
+- hosts: answer
+  
+  tasks:
+    - local_action: shell cd /home/chong/src/live-answer && git pull 
+      run_once: true
+    - file: path=/home/chong/src state=directory
+    - synchronize: src=/home/chong/src/live-answer dest=/home/chong/src
+    - shell: cd /home/chong/src/live-answer/ && npm install
+    - shell: cd /home/chong/src/live-answer/ && sh restart_all.sh
+    - template: src=nginx/answer.j2 dest=/usr/local/nginx/conf/include/answer.jiecaojingxuan.com.conf mode=0644
+      become: true
+    - service: name=nginx state=reloaded
+      become: true

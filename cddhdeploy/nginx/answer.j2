@@ -1,0 +1,21 @@
+{% include 'nginx_http.j2' %}
+
+upstream backend_server_answer {
+    server 127.0.0.1:3021;
+    server 127.0.0.1:3022;
+    server 127.0.0.1:3023;
+}
+
+server {
+    listen 8360;
+
+    server_name answer.jiecaojingxuan.com answer.gate.chongdingdahui.com;
+
+    {% include 'nginx_server.j2' %}
+
+    location / {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://backend_server_answer;
+    }
+}
+

@@ -1,0 +1,3 @@
+${IPTABLES} -A INPUT -p tcp -m multiport --dport 80,443 -j ACCEPT
+${IPTABLES} -A INPUT -p tcp -s 10.0.0.0/8 --dport 8360 -j ACCEPT
+

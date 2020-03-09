@@ -1,0 +1,8 @@
+- name: ssh key deploy
+  hosts: '{{hosts}}'
+  tasks:
+    - name: copy sshkey.sh
+      copy: src=sshkey.sh dest=/tmp/
+
+    - name: ssh sshkey.sh
+      shell: sh /tmp/sshkey.sh

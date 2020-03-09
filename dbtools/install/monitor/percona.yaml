@@ -1,0 +1,11 @@
+- name: Test the hostname file
+  hosts: aws_mysql
+  tasks:
+     - name: copy 
+       copy: src=/data/install/monitor/epel.repo   dest=/etc/yum.repos.d/
+     - name: percona-release-0.1-3.noarch.rpm 
+       yum: name=http://www.percona.com/downloads/percona-release/redhat/0.1-3/percona-release-0.1-3.noarch.rpm  state=installed update_cache=yes
+     - name: percona-toolkit 
+       yum: name=percona-toolkit  state=installed
+     - name: percona-xtrabackup 
+       yum: name=percona-xtrabackup  state=installed

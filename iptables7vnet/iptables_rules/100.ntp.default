@@ -1,0 +1,4 @@
+#${IPTABLES} -A INPUT -p udp --sport 123 -j ACCEPT
+${IPTABLES} -A INPUT -s 100.80.72.209  -p udp --sport 123 -j ACCEPT
+${IPTABLES} -A INPUT -s 169.254.0.2  -p udp --sport 123 -j ACCEPT
+

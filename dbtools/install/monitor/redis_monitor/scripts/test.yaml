@@ -1,0 +1,7 @@
+- name: Test the hostname file
+  hosts: aws_redis
+  tasks:
+     - name: copy redis_info.sh
+       copy: src=redis_info.sh   dest=/etc/zabbix/scripts/
+     - name:  chmod redis_info.sh
+       shell: chmod +x /etc/zabbix/scripts/redis_info.sh

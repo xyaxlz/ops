@@ -1,0 +1,11 @@
+- hosts: all
+  tasks:
+
+  - copy : src=check_raidisk.sh dest=/etc/zabbix/scripts/ owner=root mode=755
+  - copy : src=chkraid.conf dest=/etc/zabbix/zabbix_agentd.d/ owner=root mode=755
+  - copy : src=chkraid-cron dest=/etc/cron.d/ owner=root mode=644
+  - name: restart crond
+    service: name=crond state=restarted
+  - name: restart zabbix
+    service: name=zabbix-agent state=restarted
+

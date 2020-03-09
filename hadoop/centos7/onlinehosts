@@ -1,0 +1,9 @@
+127.0.0.1 localhost
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+114.242.236.200 smpt.pandatv.com
+10.110.22.95 spark1v.bigdata.bjac.pdtv.it
+10.110.22.96 spark2v.bigdata.bjac.pdtv.it
+10.110.22.97 spark3v.bigdata.bjac.pdtv.it
+10.110.22.99 spark4v.bigdata.bjac.pdtv.it
+10.110.22.100 spark5v.bigdata.bjac.pdtv.it

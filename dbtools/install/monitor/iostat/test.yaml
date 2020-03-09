@@ -1,0 +1,11 @@
+- name: Test the hostname file
+  hosts: mon
+  tasks:
+     - name: /data/install/monitor/
+       file: dest=/data/install/monitor mode=755 owner=root group=root state=directory    
+     - name: /etc/zabbix/scripts
+       file: dest=/etc/zabbix/scripts  mode=755 owner=root group=root state=directory    
+     - name: copy iostat
+       copy: src=/data/install/monitor/iostat   dest=/data/install/monitor
+     - name:  init.sh
+       shell: cd /data/install/monitor/iostat;sh init.sh

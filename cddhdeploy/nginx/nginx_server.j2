@@ -1,0 +1,7 @@
+    limit_conn cddh_one_limit_conn 5;
+    limit_conn_status 403;
+
+    limit_req zone=cddh_one_limit_req burst=5 nodelay;
+    limit_req_status 403;
+
+    add_header 'X-Powered' '{{ansible_hostname}}';

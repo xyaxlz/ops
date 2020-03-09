@@ -1,0 +1,20 @@
+- name: centos7 sht del_history_files deploy
+  hosts: '{{ hosts }}'
+  tasks:
+    - name:  mkfile /usr/local/etc/
+      file: path=/usr/local/etc state=directory mode=755 owner=root group=root
+
+    - name:  mkfile /usr/local/bin
+      file: path=/usr/local/bin state=directory mode=755 owner=root group=root
+
+    - name:  mkfile /usr/local/tmp
+      file: path=/usr/local/tmp state=directory mode=755 owner=root group=root
+
+    - name: copy del_history_files
+      copy: src=del_history_files dest=/usr/local/bin/ mode=755 owner=root group=root
+
+    - name: copy del_history_files.cfg
+      copy: src=del_history_files.cfg dest=/usr/local/etc/ mode=744 owner=root group=root
+
+    - name: del_history_files crontab
+      cron: name="del_history_files" minute="7" job='/usr/local/bin/del_history_files >/dev/null'

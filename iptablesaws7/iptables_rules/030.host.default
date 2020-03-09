@@ -1,0 +1,21 @@
+IPS=(
+)
+
+for IP in ${IPS[@]}
+do
+	${IPTABLES} -A INPUT -p tcp -s ${IP} -j DROP
+done
+
+IPS=(
+10.110.0.0/16
+10.120.0.0/16
+10.20.0.0/16
+)
+
+for IP in ${IPS[@]}
+do
+	${IPTABLES} -A INPUT -p tcp -s ${IP} -j ACCEPT
+done
+
+
+

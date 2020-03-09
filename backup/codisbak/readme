@@ -1,0 +1,2 @@
+ansible-playbook -i hosts  deploy.yml   -k -K -b 
+ansible -i hosts  all -m shell -a "crontab -uweb -l" -k -K -b  -u op_DBA01

@@ -1,0 +1,41 @@
+- name: deploy jumper os setting
+  hosts: '{{ hosts }}'
+  tasks:
+    - name: useradd jumper
+      user: name=jumper uid=666
+
+    - name: mkdir  /home/jumper/.ssh/
+      file: path=/home/jumper/.ssh/ state=directory owner=jumper group=jumper mode=700
+
+    - name: touch jumper authorized_keys
+      file: path=/home/jumper/.ssh/authorized_keys state=touch owner=jumper group=jumper mode=600
+
+    - name:  copy jumper_id_rsa.pub
+      copy: src=jumper_id_rsa.pub  dest=/tmp/
+
+    - name: bak authorized_keys
+      shell: cp /home/jumper/.ssh/authorized_keys /home/jumper/.ssh/authorized_keys_{{baktime}}
+
+    - name: sed /jumper/d
+      lineinfile: dest=/home/jumper/.ssh/authorized_keys regexp=jumper@jumper1v state=absent
+
+    - name: config authorized_keys
+      shell:  cat /tmp/jumper_id_rsa.pub  >> /home/jumper/.ssh/authorized_keys
+
+    - name: chown jumper.jumper .ssh
+      file: path=/home/jumper/.ssh owner=jumper group=jumper mode=700
+
+    - name: chown 600 .ssh/authorized_keys
+      file: path=/home/jumper/.ssh/authorized_keys  owner=jumper group=jumper mode=600
+
+#    - name: disable sudo requiretty
+#      lineinfile: dest=/etc/sudoers regexp='^Defaults    requiretty' line='#Defaults    requiretty' validate='visudo -cf %s'
+
+    - name: disable sudo requiretty
+      shell: sed -i '/^Defaults    requiretty/ s/^/#/g' /etc/sudoers
+
+#    - name: config jumper sudo
+#      lineinfile: dest=/etc/sudoers regexp='jumper' line="jumper ALL=(ALL) NOPASSWD:ALL" validate='visudo -cf %s' backup=yes
+    - name: config jumper sudo
+      lineinfile: dest=/etc/sudoers  line="jumper ALL=(ALL) NOPASSWD:ALL" validate='visudo -cf %s' backup=yes
+

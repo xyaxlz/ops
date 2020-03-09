@@ -1,0 +1,55 @@
+##以roll 机器为例子 添加villa.pdtv.io count.pdtv.io badge.pdtv.io域名解析
+##添加villa.pdtv.io hosts 解析
+ansible -i   /home/q/tools/game_team/svr/ansible.yml bjac_plat_roll -m copy -a "src=villahost.sh dest=/tmp/" -k -K -s
+ansible -i   /home/q/tools/game_team/svr/ansible.yml bjac_plat_roll -m shell -a "sh /tmp/villahost.sh" -k -K -s
+
+添加count.pdtv.io hosts解析
+ansible -i   /home/q/tools/game_team/svr/ansible.yml bjac_plat_roll -m copy -a "src=counthost.sh dest=/tmp/" -k -K -s
+ansible -i   /home/q/tools/game_team/svr/ansible.yml bjac_plat_roll -m shell -a "sh /tmp/counthost.sh" -k -K -s
+
+### 添加badge.pdtv.io hosts解析
+
+ansible -i   /home/q/tools/game_team/svr/ansible.yml bjac_plat_roll -m copy -a "src=badgehost.sh dest=/tmp/" -k -K -s
+ansible -i   /home/q/tools/game_team/svr/ansible.yml bjac_plat_roll -m shell -a "sh /tmp/badgehost.sh" -k -K -s
+
+###同时添加 villa.pdtv.io count.pdtv.io badge.pdtv.io hosts解析
+ansible-playbook  -i /home/q/tools/game_team/svr/ansible.yml -e "hosts=bjac_plat_roll" alldns.yml  -k -K -s
+
+
+
+
+
+
+
+
+###注释掉 villa.pdtv.io count.pdtv.io badge.pdtv.io hosts解析
+ansible -i /home/q/tools/game_team/svr/ansible.yml  bjac_plat_roll  -m shell -a "sed -i '/count.pdtv.io\|villa.pdtv.io\|badge.pdtv.io/s/^/#/g' /etc/hosts" -k -K -s
+
+
+
+###操作备份
+
+###添加hosts 解析
+ansible-playbook  -i /home/q/tools/game_team/svr/ansible.yml -e "hosts=bjac_main_w[0:39]" alldns.yml  -k -K -s
+ansible-playbook  -i /home/q/tools/game_team/svr/ansible.yml -e "hosts=bjac_main_apim[0:29]" alldns.yml  -k -K -s
+ansible-playbook  -i /home/q/tools/game_team/svr/ansible.yml -e "hosts=bjac_plat_work[3:4]" alldns.yml  -k -K -s
+ansible-playbook  -i /home/q/tools/game_team/svr/ansible.yml -e "hosts=bjac_plat_roll" alldns.yml  -k -K -s
+ansible-playbook  -i /home/q/tools/game_team/svr/ansible.yml -e "hosts=bjac_main_prop" alldns.yml  -k -K -s
+
+
+###删除hosts 解析
+ansible -i /home/q/tools/game_team/svr/ansible.yml  bjac_main_w[0:39]  -m shell -a "sed -i '/count.pdtv.io\|villa.pdtv.io\|badge.pdtv.io/s/^/#/g' /etc/hosts" -k -K -s
+ansible -i /home/q/tools/game_team/svr/ansible.yml  bjac_main_apim[0:29]  -m shell -a "sed -i '/count.pdtv.io\|villa.pdtv.io\|badge.pdtv.io/s/^/#/g' /etc/hosts" -k -K -s
+ansible -i /home/q/tools/game_team/svr/ansible.yml  bjac_plat_work[3:4]  -m shell -a "sed -i '/count.pdtv.io\|villa.pdtv.io\|badge.pdtv.io/s/^/#/g' /etc/hosts" -k -K -s
+ansible -i /home/q/tools/game_team/svr/ansible.yml  bjac_plat_roll  -m shell -a "sed -i '/count.pdtv.io\|villa.pdtv.io\|badge.pdtv.io/s/^/#/g' /etc/hosts" -k -K -s
+ansible -i /home/q/tools/game_team/svr/ansible.yml  bjac_main_prop  -m shell -a "sed -i '/count.pdtv.io\|villa.pdtv.io\|badge.pdtv.io\|relation.pdtv.io\|api.u.panda.tv/s/^/#/g' /etc/hosts" -k -K -s
+ansible -i /home/q/tools/game_team/svr/ansible.yml  bjac_main_w[1]  -m shell -a "sed -i '/10.110/d' /etc/hosts" -k -K -s -f 20
+
+
+##
+ansible -i /home/q/tools/game_team/svr/ansible.yml  bjac_main_prop  -m shell -a "grep pdtv.io /etc/hosts" -k -K -s
+
+
+ansible-playbook  -i add -e "hosts=add" alldns.yml -k -K -s
+ansible -i add add   -m shell -a "sed -i '/count.pdtv.io\|api.u.panda.tv\|magi.pdtv.io/s/^/#/g' /etc/hosts" -k -K -s
+

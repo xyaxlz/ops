@@ -1,0 +1,9 @@
+#VERSION_NUMBER=2.4.2.0-136
+
+[Updates-ambari-2.4.2.0]
+name=ambari-2.4.2.0 - Updates
+baseurl=http://10.110.17.7/ambari/2.4.2.0/centos7/Updates-ambari-2.4.2.0
+gpgcheck=1
+gpgkey=http://10.110.17.7/ambari/2.4.2.0/centos7/Updates-ambari-2.4.2.0/RPM-GPG-KEY-Jenkins
+enabled=1
+priority=1

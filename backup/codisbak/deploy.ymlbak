@@ -1,0 +1,13 @@
+- name: deploy redisproxy
+  hosts: all
+  user: op_DBA01
+  gather_facts: false
+  tasks:
+  - name: mkdir
+    file: path=/data/install state=directory mode="0755"
+
+  - name: tar xvf redisproxy.v0.2.6.tar.gz
+    unarchive: src=redisproxy.v0.2.6.tar.gz dest=/data/install/
+
+  - name:
+    shell: su - web -c  "cd /data/install/redisproxy; sh start_{{idc}}.sh  {{proxyargs}}"

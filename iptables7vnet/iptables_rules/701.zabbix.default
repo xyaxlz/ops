@@ -1,0 +1,1 @@
+${IPTABLES} -A INPUT -p tcp --dport 10050 -j ACCEPT

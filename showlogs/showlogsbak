@@ -1,0 +1,191 @@
+export PATH=.:/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin:/bin:/usr/bin:/usr/local/bin
+#! bash
+#/usr/local/bin/bash
+export LC_ALL="zh_CN.UTF-8"
+#	格式化输出
+export boldred='\E[1;31m\c'
+export boldgreen='\E[1;32m\c'
+export boldyellow='\E[1;33m\c'
+export boldcyan='\E[1;36m\c'
+c_notify=$boldcyan
+c_error=$boldred
+c_title=$boldgreen
+c_file=$boldyellow
+cecho()
+{
+	message=$1
+	color=${2:-$black}
+	echo -e "$color"
+	echo -e "$message"
+	tput sgr0			# Reset to normal.
+	echo -e "$black"
+	return
+}
+clusters_confirm()
+{
+    read num
+    if [ $num = "q" ]; then
+        exit 0;
+    fi
+    if [[ $num =~ ^[0-9]*$ ]] && [[ $num -gt 0 ]] && [[ $num -le ${#host_array[@]} ]]; then
+        cecho "ssh ${host_array[$num]}" $c_error
+        cecho " ----- 日志路径说明 -----" $c_notify
+        cecho "nginx日志 cd /data/nginxlogs/" $c_notify
+        cecho "项目日志 cd /data/projlogs/" $c_notify
+        cecho "FPM慢日志 cd /data/phplogs/" $c_notify
+    else
+        cecho "请输入正确的遍号,退出(q)" $c_error
+        clusters_confirm
+    fi
+    return 0;
+}
+
+LOGCENTER_LIST=(
+	beta日志-t开头的机器日志都在这里=t4v.plat.bjac.pdtv.it
+	qhydra=log1v.infra.bjac.pdtv.it
+	log3=log3v.infra.bjac.pdtv.it
+	log4=log4v.infra.bjac.pdtv.it
+	log5=log5v.infra.bjac.pdtv.it
+	log6=log6v.infra.bjac.pdtv.it
+	log7=log7v.infra.bjac.pdtv.it
+    work=10.20.0.30
+    admbuffon=10.20.0.72
+    api.m=10.20.0.72
+    allen=10.20.0.72
+    api.pc=10.20.0.30
+    apiproxy=log5v.infra.bjac.pdtv.it
+    bag=10.20.0.72
+    ban=10.110.16.203
+    bee=10.20.0.30
+    bikini=log5v.infra.bjac.pdtv.it
+    bjzalog4=log4v.infra.bjza.pdtv.it
+    bloodstone=log3v.infra.bjac.pdtv.it
+    breeder=10.20.0.30
+    breeder=log3v.infra.bjac.pdtv.it
+    buffon=log3v.infra.bjac.pdtv.it
+    channel-pandaren=10.20.0.30
+    channel-pandaren=log5v.infra.bjac.pdtv.it
+    cms.admin.pandatv.com=10.20.0.30
+    coop_go=log5v.infra.bjac.pdtv.it
+    count=10.20.0.72
+    dot_go=log5v.infra.bjac.pdtv.it
+    down.api.m=log5v.infra.bjac.pdtv.it
+    eat=10.20.0.72
+    feedback=10.20.0.30
+    fissure=10.20.0.72
+    gate=10.20.0.30
+    gift.admin.pandatv.com=log5v.infra.bjac.pdtv.it
+    goddess=log3v.infra.bjac.pdtv.it
+    grank=10.20.0.30
+    holiday=10.20.0.30
+    hr-pandaren=10.20.0.30
+    ibag=10.20.0.72
+    ipquery=log5v.infra.bjac.pdtv.it
+    itachi=log5v.infra.bjac.pdtv.it
+    ivern=10.20.0.72
+    jiraiya=log5v.infra.bjac.pdtv.it
+    kakashi=10.20.0.30
+    karma=10.20.0.70
+    lenna=log3v.infra.bjac.pdtv.it
+    magi=10.20.0.30
+    mall=log3v.infra.bjac.pdtv.it
+    maps=log5v.infra.bjac.pdtv.it
+    message=log5v.infra.bjac.pdtv.it
+    mobi-pandaren=10.20.0.30
+    notice-pandaren=log3v.infra.bjac.pdtv.it
+    notice-pandaren=log7v.infra.bjac.pdtv.it
+    oauth=log3v.infra.bjac.pdtv.it
+    onion=10.20.0.30
+    op.admin.pandatv=log5v.infra.bjac.pdtv.it
+    open-pandaren=log3v.infra.bjac.pdtv.it
+    pa.admin=log6v.infra.bjac.pdtv.it
+    pandagirl=log3v.infra.bjac.pdtv.it
+    pandaren=10.20.0.30
+    partner-360game=10.20.0.30
+    partner-qqgame=10.20.0.30
+    pharah=log7v.infra.bjac.pdtv.it
+    prop.api.m=10.20.0.72
+    qhydra=log1v.infra.bjac.pdtv.it
+    qrcode=log3v.infra.bjac.pdtv.it
+    refresherorb=log3v.infra.bjac.pdtv.it
+    relation=log6v.infra.bjac.pdtv.it
+    report=10.20.0.30
+    roll=10.20.0.72
+    room.api.m=10.20.0.30
+    ruc=10.20.0.72
+    sandglass=10.20.0.72
+    shadow=log6v.infra.bjac.pdtv.it
+    shannon=log6v.infra.bjac.pdtv.it
+    sivir=log6v.infra.bjac.pdtv.it
+    static.api.m=10.20.0.30
+    static.api.m=log6v.infra.bjac.pdtv.it
+    talon_sum=log5v.infra.bjac.pdtv.it
+    teemo=10.20.0.30
+    tracer=10.20.0.30
+    trafficcop=log3v.infra.bjac.pdtv.it
+    uconfig=log5v.infra.bjac.pdtv.it
+    unknow=log6v.infra.bjac.pdtv.it
+    uprofile=log6v.infra.bjac.pdtv.it
+    vereesa=10.20.0.30
+    video=log6v.infra.bjac.pdtv.it
+    video_wall=log3v.infra.bjac.pdtv.it
+    vidic_go=10.20.0.30
+    viewfinder=log5v.infra.bjac.pdtv.it
+    villa=10.20.0.30
+    window.panda.tv=log5v.infra.bjac.pdtv.it
+    winston=10.20.0.30
+
+)
+
+
+cecho " === 请选择日志编号 ===[2017/02/14] " $c_file
+aa(){
+i=1;
+for line in ${LOGCENTER_LIST[@]}
+do
+        #desc=$(echo ${line}|awk -F= '{print $1}')
+        desc=`echo $line|awk -F'=' '{print $1"->"$2}'`
+        host=$(echo ${line}|awk -F= '{print $2}')
+        host_array[$i]=$host;
+        cecho "[$i]:\t$desc" $c_title
+        #echo "[$i]:  $desc"
+        i=$(($i+1))
+done
+clusters_confirm
+gohost=${host_array[$num]}
+sudo su - search -c "ssh -oStrictHostKeyChecking=no $gohost "
+}
+
+
+bb(){
+    prj=$1
+    echo $prj
+     x=1;
+     for line in ${LOGCENTER_LIST[@]}
+     do
+        project=`echo $line|awk -F= '{print $1}'`
+        project1=`echo $line|awk -F'=' '{print $1"->"$2}'`
+        h=`echo $line|awk -F= '{print $2}'`
+        host_array[$x]=$h;
+        [ "$project" == "$prj" ] && cecho "[$x]:\t$project1" $c_title
+        x=$(($x+1))
+     done
+     clusters_confirm
+     gohost=${host_array[$num]}
+     sudo su - search -c "ssh -oStrictHostKeyChecking=no $gohost "
+}
+
+ARG=$1
+if [ "ZZ$ARG" == "ZZ" ]; then
+    aa
+else
+    bb $ARG
+fi
+
+
+
+
+
+
+
+

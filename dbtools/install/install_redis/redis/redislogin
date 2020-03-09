@@ -1,0 +1,21 @@
+#!/bin/bash
+
+REDISPORT=6379
+if ! expr $REDISPORT + 0 &>/dev/null;then
+	echo "$REDISPORT is not number"	
+	exit
+fi
+
+
+echo $REDISPORT
+OPT=$1
+EXEC=/usr/local/redis/bin/redis-server
+DBPWD=`awk  '/^requirepass/{print $2}' /etc/redis/${REDISPORT}.conf|sed 's/"//g'`
+
+if test -z $DBPWD;then
+        CLIEXEC="/usr/local/redis/bin/redis-cli  -p $REDISPORT $OPT "
+else
+        CLIEXEC="/usr/local/redis/bin/redis-cli -p $REDISPORT -a $DBPWD $OPT"
+fi
+
+$CLIEXEC

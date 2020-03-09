@@ -1,0 +1,9 @@
+- name: deploy yum
+  hosts: '{{ hosts }}'
+  tasks:
+
+    - name: copy ambari-2.4.2.repo
+      copy: src=ambari-2.4.2.repo dest=/etc/yum.repos.d/
+
+    - name: yum clean all
+      shell: yum clean all

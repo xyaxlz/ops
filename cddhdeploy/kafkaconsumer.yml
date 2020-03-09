@@ -1,0 +1,22 @@
+- hosts: barrage2v.infra.bjae.cddh.it
+
+  pre_tasks:
+   - local_action: shell cd /home/chong/src/live-api/live-quiz-server/kafka-consumer/ && \
+        git pull && \
+        gradle clean && \
+        gradle build -x test && \
+        mv build/libs/kafka-consumer*.jar build/libs/kafka-consumer.jar
+     run_once: true
+   - name: copy kafka-consumer.jar
+     copy: src=/home/chong/src/live-api/live-quiz-server/kafka-consumer/build/libs/kafka-consumer.jar   dest=/home/chong/src/  owner=chong group=chong  mode=755
+   - name: copy api-server-prod.properties
+     copy: src=/home/chong/src/live-api/live-quiz-server/conf/kafka-consumer-prod.properties dest=/home/chong/src/  owner=chong group=chong  mode=755
+
+  roles:
+    - {
+        role: supervisor,
+        program_id: "kafkaconsumer",
+        command: "java -jar -Dspring.config.location=/home/chong/src/kafka-consumer-prod.properties /home/chong/src/kafka-consumer.jar",
+        state: restarted,
+    }
+

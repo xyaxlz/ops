@@ -1,0 +1,23 @@
+### 白名单
+geo $cddh_whiteiplist  {
+    default 1;
+    127.0.0.1 0;
+    222.249.170.92 0;
+    114.242.236.140 0;
+    47.94.103.68 0;
+    10.0.0.0/8 0;
+}
+
+### 高防
+map $http_wl_proxy_client_ip $wl_real_ip {
+    default $binary_remote_addr;
+    ~\d $http_wl_proxy_client_ip;
+}
+
+map $cddh_whiteiplist $cddh_limit {
+    1 $wl_real_ip;
+    0 "";
+}
+
+limit_conn_zone $cddh_limit zone=cddh_one_limit_conn:10m;
+limit_req_zone $cddh_limit zone=cddh_one_limit_req:10m rate=50r/m;

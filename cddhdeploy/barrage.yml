@@ -1,0 +1,12 @@
+- hosts: barrage
+  
+  tasks:
+    - local_action: shell cd /home/chong/src/barrage-server && git pull 
+      run_once: true
+    - file: dest=/home/chong/src state=directory
+    - synchronize: src=/home/chong/src/barrage-server dest=/home/chong/src
+    - shell: cd /home/chong/src/barrage-server/ && \
+        npm install node-rdkafka &&\
+        npm install
+      ignore_errors: yes
+    - shell: cd /home/chong/src/barrage-server/ && npm restart

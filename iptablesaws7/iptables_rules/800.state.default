@@ -1,0 +1,2 @@
+${IPTABLES} -A INPUT -p tcp -m state --state ESTABLISHED,RELATED -j ACCEPT
+${IPTABLES} -A INPUT -m state --state INVALID -j DROP

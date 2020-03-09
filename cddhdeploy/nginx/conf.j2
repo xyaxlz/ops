@@ -1,0 +1,26 @@
+{% include 'nginx_http.j2' %}
+
+upstream backend_server_conf {
+    server 127.0.0.1:3001;
+    server 127.0.0.1:3002;
+    server 127.0.0.1:3003;
+}
+
+server {
+    listen 8360;
+
+    server_name conf.jiecaojingxuan.com conf.gate.chongdingdahui.com;
+
+    set_real_ip_from  127.0.0.1;
+    set_real_ip_from  100.116.71.0/24;
+    set_real_ip_from  10.0.0.0/8;
+    real_ip_header    X-Forwarded-For;
+    real_ip_recursive on;
+
+    {% include 'nginx_server.j2' %}
+
+    location / {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://backend_server_conf;
+    }
+}

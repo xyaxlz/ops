@@ -1,0 +1,15 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+10.20.0.51  ambari1v.ops.soho.pdtv.it
+10.20.0.52  namenode1v.ops.soho.pdtv.it
+10.20.0.53  namenode2v.ops.soho.pdtv.it
+10.20.0.54  datanode1v.ops.soho.pdtv.it
+10.20.0.55  datanode2v.ops.soho.pdtv.it
+10.20.0.56  datanode3v.ops.soho.pdtv.it
+10.20.0.57  datanode4v.ops.soho.pdtv.it
+10.20.0.58  datanode5v.ops.soho.pdtv.it
+10.20.0.144 hadoopc1v.ops.soho.pdtv.it
+10.20.0.145 hadoopc2v.ops.soho.pdtv.it
+10.20.0.143 ip.pdtv.io
+10.110.20.12 logcollect1v.infra.bjac.pdtv.it
+10.110.20.11 logcollect2v.infra.bjac.pdtv.it
+10.110.17.7 public-repo-1.hortonworks.com

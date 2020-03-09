@@ -1,0 +1,4 @@
+- name: copy ngxtop
+  copy: "src=ngxtop  dest=/home/server_config/monitor/bin/ mode=755"
+- name: copy project
+  template: "src=loginfo.pl dest=/home/liufeng/ mode=755"

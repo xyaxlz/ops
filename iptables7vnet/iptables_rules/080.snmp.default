@@ -1,0 +1,3 @@
+#${IPTABLES} -A INPUT -p udp --dport 161 -j ACCEPT
+#${IPTABLES} -A INPUT -p udp --sport 161 -j ACCEPT
+

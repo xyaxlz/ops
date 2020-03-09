@@ -1,0 +1,10 @@
+- name: hosts-deploy
+  hosts: '{{ hosts }}'
+  tasks:
+   - name: hosts bak
+     shell: cp  /etc/hosts /etc/hosts_'{{version}}'
+   - name: copy sohohosts
+     copy: src=sohohosts   dest=/etc/hosts
+
+#   - name: hosts recovery
+#     shell: cp  /etc/hosts_'{{version}}'' /etc/hosts'

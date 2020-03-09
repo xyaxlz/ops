@@ -1,0 +1,13 @@
+- hosts: conf
+  
+  tasks:
+    - local_action: shell cd /home/chong/src/live-conf && git pull 
+      run_once: true
+    - file: dest=/home/chong/src state=directory
+    - synchronize: src=/home/chong/src/live-conf dest=/home/chong/src/
+    - shell: cd /home/chong/src/live-conf/ && npm install
+    - shell: cd /home/chong/src/live-conf/ && sh restart_all.sh
+    - template: src=nginx/conf.j2 dest=/usr/local/nginx/conf/include/conf.jiecaojingxuan.com.conf mode=0644
+      become: true
+    - service: name=nginx state=reloaded
+      become: true

@@ -1,0 +1,1 @@
+ansible -i hosts.yml  barrage -m copy -a "src=kafkahosts dest=/etc/hosts " -s

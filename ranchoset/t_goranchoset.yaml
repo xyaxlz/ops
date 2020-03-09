@@ -1,0 +1,67 @@
+- name: deploy rancho os setting
+  hosts: '{{ hosts }}'
+  tasks:
+    - name: useradd rancho
+      user: name=rancho uid=3057
+
+    - name: mkdir  /home/rancho/.ssh/
+      file: path=/home/rancho/.ssh/ state=directory owner=rancho group=rancho mode=700
+
+    - name: touch rancho authorized_keys
+      file: path=/home/rancho/.ssh/authorized_keys state=touch owner=rancho group=rancho mode=600
+
+    - name:  copy t_rancho_id_rsa.pub
+      copy: src=t_rancho_id_rsa.pub  dest=/tmp/
+
+    - name: bak authorized_keys
+      shell: cp /home/rancho/.ssh/authorized_keys /home/rancho/.ssh/authorized_keys_{{baktime}}
+
+    - name: sed /rancho/d
+      lineinfile: dest=/home/rancho/.ssh/authorized_keys regexp=rancho@dev09 state=absent
+
+    - name: config authorized_keys
+      shell:  cat /tmp/t_rancho_id_rsa.pub  >> /home/rancho/.ssh/authorized_keys
+
+    - name: chown rancho.rancho .ssh
+      file: path=/home/rancho/.ssh owner=rancho group=rancho mode=700
+
+    - name: chown 600 .ssh/authorized_keys
+      file: path=/home/rancho/.ssh/authorized_keys  owner=rancho group=rancho mode=600
+
+#    - name: disable sudo requiretty
+#      lineinfile: dest=/etc/sudoers regexp='^Defaults    requiretty' line='#Defaults    requiretty' validate='visudo -cf %s'
+
+    - name: disable sudo requiretty
+      shell: sed -i '/^Defaults    requiretty/ s/^/#/g' /etc/sudoers
+
+    - name: config rancho sudo
+      lineinfile: dest=/etc/sudoers regexp='rancho' line="rancho ALL=(ALL) NOPASSWD:ALL" validate='visudo -cf %s' backup=yes
+
+
+
+#    - name: useradd search
+#      user: name=search uid=1016
+
+    - name: mkdir search  /home/search/.ssh/
+      file: path=/home/search/.ssh/ state=directory owner=search group=search mode=700
+
+    - name: touch search authorized_keys
+      file: path=/home/search/.ssh/authorized_keys state=touch owner=search group=search mode=600
+
+    - name:  copy search_id_rsa.pub
+      copy: src=search_id_rsa.pub  dest=/tmp/
+
+    - name: bak authorized_keys
+      shell: cp /home/search/.ssh/authorized_keys /home/search/.ssh/authorized_keys_{{baktime}}
+
+    - name: sed /search/d
+      lineinfile: dest=/home/search/.ssh/authorized_keys regexp=search@rancho1v state=absent
+
+    - name: config search authorized_keys
+      shell:  cat /tmp/search_id_rsa.pub  >> /home/search/.ssh/authorized_keys
+
+    - name: chown search.search .ssh
+      file: path=/home/search/.ssh owner=search group=search mode=700
+
+    - name: chown 600 .ssh/authorized_keys
+      file: path=/home/search/.ssh/authorized_keys  owner=search group=search mode=600

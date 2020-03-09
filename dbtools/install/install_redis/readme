@@ -1,0 +1,2 @@
+sh   remote_install_redis.sh -m rdb13v.infra.bjac.pdtv.it -s rdb14v.infra.bjac.pdtv.it -p 03e07ad9603a4b99  -P 6953 -g 10 
+sh   remote_install_redis.sh -m rdb13v.infra.bjac.pdtv.it -s rdb14v.infra.bjac.pdtv.it -p 03e07ad9603a4b99  -P 6953 -g 10 -t uninstall

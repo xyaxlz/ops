@@ -1,0 +1,2 @@
+${IPTABLES} -A INPUT -p icmp -j ACCEPT
+

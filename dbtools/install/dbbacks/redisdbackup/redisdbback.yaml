@@ -1,0 +1,13 @@
+- name: redis dbback
+  hosts: bjac_redis
+  tasks:
+     - name: /data/scripts
+       file: dest=/data/scripts  mode=755 owner=root group=root state=directory
+     - name: copy redisdbback.sh
+       copy: src=redisdbback.sh   dest=/data/scripts
+     - name: redisdbback.sh
+       file: name=/data/scripts/redisdbback.sh  mode=755 state=file
+     - name: 删除redis备份cron 
+       cron: name="###redis数据库备份" state=absent
+     - name: 添加redis备份cron 
+       cron: name="###redis数据库备份" minute=0 hour=5 job="/data/scripts/redisdbback.sh >/dev/null 2>&1"

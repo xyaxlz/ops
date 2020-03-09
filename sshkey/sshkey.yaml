@@ -1,0 +1,27 @@
+- name: deploy ssh key
+  hosts: '{{ hosts }}'
+  tasks:
+    - name: mkdir  /home/{{user}}/.ssh/
+      file: path=/home/{{user}}/.ssh/ state=directory owner={{user}} group={{user}} mode=700
+
+    - name:  copy /id_rsa.pub
+      copy: src=/home/{{user}}/.ssh/id_rsa.pub  dest=/tmp/
+
+    - name: touch authorized_keys
+      file: path=/home/{{user}}/.ssh/authorized_keys state=touch  owner={{user}} group={{user}} mode=600
+
+    - name: bak authorized_keys
+      shell: cp /home/{{user}}/.ssh/authorized_keys /home/{{user}}/.ssh/authorized_keys_{{baktime}}
+
+
+    - name: sed /{{user}}/d
+      lineinfile: dest=/home/{{user}}/.ssh/authorized_keys regexp={{user}}@{{hostname}} state=absent
+
+    - name: config authorized_keys
+      shell:  cat /tmp/id_rsa.pub  >> /home/{{user}}/.ssh/authorized_keys
+
+    - name: chown {{user}}.{{user}} .ssh
+      file: path=/home/{{user}}/.ssh owner={{user}} group={{user}} mode=700
+
+    - name: chown 600 .ssh/authorized_keys
+      file: path=/home/{{user}}/.ssh/authorized_keys  owner={{user}} group={{user}} mode=600

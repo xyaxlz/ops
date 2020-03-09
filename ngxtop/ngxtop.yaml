@@ -1,0 +1,32 @@
+- name: deploy ngxtop
+  hosts: '{{ hosts }}'
+  tasks:
+     - name: back ngxtop
+       shell: "cp /home/server_config/monitor/bin/ngxtop /home/server_config/monitor/bin/ngxtop.`date +%Y%m%d%H%M`"
+
+     - name: copy ngxtop
+       copy: src=ngxtop dest=/home/server_config/monitor/bin/ngxtop mode=755
+
+     - name: nginx cron
+       cron: name="ngxtop"  user="root"  minute="*/1" job="/home/server_config/monitor/bin/ngxtop"
+
+     - name: projlogs perl  back 
+       shell: "[ -f /home/server_config/monitor/bin/loginfo.pl ] && cp /home/server_config/monitor/bin/loginfo.pl  /home/server_config/monitor/bin/loginfo.pl.`date +%Y%m%d%H%M`"
+
+     - name: projlogs perl
+       copy: "src=loginfo.pl dest=/home/server_config/monitor/bin/"
+
+     - name: projlogs config bak
+       shell: "[ -f /home/server_config/monitor/etc/config.txtg ] && cp /home/server_config/monitor/etc/config.txtg   /home/server_config/monitor/etc/config.txtg.`date +%Y%m%d%H%M`"
+    
+     - name: projlogs copy
+       copy: "src=config.txtg dest=/home/server_config/monitor/etc/"
+ 
+     - name: make env
+       shell: "touch /dev/shm/.logfile.tmp"
+
+     - name: projlogs cron
+       cron: name="projlogs check" user="root" minute="*/1"  job="perl /home/server_config/monitor/bin/loginfo.pl  /home/server_config/monitor/etc/config.txtg"      
+ 
+     - name: check cron 
+       shell: "crontab  -l"

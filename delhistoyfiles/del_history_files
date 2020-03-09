@@ -1,0 +1,76 @@
+#!/bin/bash
+
+#
+# define restricted path
+PATH="/bin:/usr/bin:/sbin:/usr/sbin"
+
+# adirname - return absolute dirname of given file
+adirname() { odir=`pwd`; cd `dirname $1`; pwd; cd "${odir}"; }
+die() { error "$@"; exit 1; }
+
+# ---------
+# constants
+# ---------
+MYNAM=`basename "$0"`
+MYDIR=`adirname "$0"`
+MYCFG="${MYDIR}/../etc/${MYNAM}.cfg"
+MYTMP="${MYDIR}/../tmp"
+MYLCK="${MYTMP}/${MYNAM}.lock"
+mkdir -p $MYTMP
+
+# perform some locking (as good as it gets in a shell)
+[ -s "${MYLCK}" ] && kill -0 `cat "${MYLCK}"` 2>/dev/null &&
+        die "${MYNAM}: already running!"
+echo "$$" > "${MYLCK}"
+
+
+FILECONFIG=(`cat $MYCFG|grep -v "^#"`)
+FILEPATHS=(`cat $MYCFG|grep -v "^#"|awk -F '=' '{print $1}'`)
+
+for FILE in  ${FILECONFIG[*]}
+do
+	FILEPATH=`echo $FILE|awk -F '=' '{print $1}'`
+	FILETIME=`echo $FILE|awk -F '=' '{print $2}'`
+	FINDARGS=''
+	EXFILESARR=()
+	if test $FILETIME -eq 0;then
+
+		FILETIMEARGS=''
+	else
+		FILETIME=`echo $FILETIME*60|bc`
+		FILETIMEARGS="-mmin +$FILETIME"
+	fi
+
+
+	if [ ! -d ${FILEPATH} ]; then
+		continue
+	fi
+
+	for FILEPATH2 in ${FILEPATHS[*]}
+	do
+		if [[ `echo $FILEPATH2|grep ^$FILEPATH` ]]&&[[ $FILEPATH != $FILEPATH2 ]];then
+			test    ${FILEPATH2: -1} = / && FILEPATH2=${FILEPATH2%?}
+			EXFILESARR[${#EXFILESARR[*]}]=$FILEPATH2
+		fi
+	done
+	EXPATHS=''
+	if [[ ${#EXFILESARR[*]} -eq 1 ]];then
+		EXPATHS=''
+		EXPATHS="-path ${EXFILESARR[*]} -prune -o"
+	elif [[ ${#EXFILESARR[*]} -gt 1 ]];then
+		EXPATHS="-path ${EXFILESARR[0]}"
+
+		for EXPATH  in ${EXFILESARR[*]:1:${#EXFILESARR[*]}}
+		do
+			EXPATHS="$EXPATHS -o -path $EXPATH"
+		done
+		EXPATHS="( ${EXPATHS} ) -prune -o"
+	fi
+	FINDARGS=" $FILEPATH $EXPATHS "
+#	echo "find $FINDARGS -type f  $FILETIMEARGS "
+#	find $FINDARGS -type f  $FILETIMEARGS
+	find $FINDARGS -type f  $FILETIMEARGS  -exec rm -f {} \;
+
+done
+
+rm -f ${MYLCK}

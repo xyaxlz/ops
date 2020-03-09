@@ -1,0 +1,10 @@
+- hosts: msg
+  
+  tasks:
+    - local_action: shell cd /home/chong/src/live-msg && git pull 
+      run_once: true
+    - file: dest=/home/chong/src state=directory
+    - synchronize: src=/home/chong/src/live-msg dest=/home/chong/src
+    - shell: cd /home/chong/src/live-msg/ && npm install
+    - shell: cd /home/chong/src/live-msg/ && sh restart_all.sh
+      #become: true

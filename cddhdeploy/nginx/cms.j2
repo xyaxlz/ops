@@ -1,0 +1,25 @@
+{% include 'nginx_http.j2' %}
+
+upstream backend_server_cms {
+    server 127.0.0.1:8080;
+}
+
+server {
+    listen 8360;
+
+    server_name livecms.jiecaojingxuan.com cms.gate.chongdingdahui.com;
+
+    index  index.html index.htm;
+    root  /home/chong/src/cms-web/dist/;
+
+    location /api/ {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://backend_server_cms/;
+    }
+
+    location / {
+        root /home/chong/src/cms-web/dist/;
+        index index.html;
+    }
+}
+

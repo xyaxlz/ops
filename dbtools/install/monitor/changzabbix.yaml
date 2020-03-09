@@ -1,0 +1,7 @@
+- name: Test the hostname file
+  hosts: all
+  tasks:
+     - name: copy 
+       copy: src=changzabbix.sh   dest=/data/install/
+     - name: changzabbix.sh 
+       shell: cd /data/install/ ; sh changzabbix.sh

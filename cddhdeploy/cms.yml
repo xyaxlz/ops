@@ -1,0 +1,32 @@
+- hosts: cms
+
+  pre_tasks:
+   - local_action: shell cd /home/chong/src/live-api/live-quiz-server/api-server/ && \
+        git pull && \
+        gradle clean && \
+        gradle build -x test && \
+        mv build/libs/api-server*.jar build/libs/api-server.jar
+     run_once: true
+   - name: build www
+     local_action: shell cd /home/chong/src/cms-front && npm install && npm run build
+     run_once: true
+   - name: copy api-server.jar
+     copy: src=/home/chong/src/live-api/live-quiz-server/api-server/build/libs/api-server.jar   dest=/home/chong/src/  owner=chong group=chong  mode=755
+   - name: copy api-server-prod.properties
+     copy: src=/home/chong/src/live-api/live-quiz-server/conf/api-server-prod.properties dest=/home/chong/src/  owner=chong group=chong  mode=755
+   - name: copy www
+     copy: src=/home/chong/src/cms-front/dist dest=/home/chong/src/cms-web owner=chong group=chong mode=777
+
+  roles:
+    - {
+        role: supervisor,
+        program_id: "api-server",
+        command: "java -jar -Dspring.config.location=/home/chong/src/api-server-prod.properties /home/chong/src/api-server.jar",
+        state: restarted,
+    }
+
+  tasks:
+    - template: src=nginx/cms.j2 dest=/usr/local/nginx/conf/include/cms.jiecaojingxuan.com.conf mode=0644
+      become: true
+    - service: name=nginx state=reloaded
+      become: true

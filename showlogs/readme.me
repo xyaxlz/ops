@@ -1,0 +1,2 @@
+ansible -i soho  soho_dev -m copy -a "src=showlogs dest=/usr/local/bin/ owner=root group=root mode=755" -k -K -s
+ansible -i soho  all -m cron  -a "name=updatesvr minute=*/5 job='cd /home/q/tools/game_team/svr ; python updatesvr 2>&1 >/dev/null'" -k -K -s

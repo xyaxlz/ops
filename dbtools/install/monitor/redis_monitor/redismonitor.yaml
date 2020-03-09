@@ -1,0 +1,23 @@
+- name: redis monitor
+  hosts: bjac_redis
+  tasks:
+     - name: /data/install/monitor/
+       file: dest=/data/install/monitor mode=755 owner=root group=root state=directory
+     - name: yum python-simplejson
+       yum:  name=python-simplejson state=installed
+     - name: copy zabbix_agent.install
+       copy: src=zabbix_agent.install   dest=/data/install/monitor/
+     - name: zabbix_agent.install
+       shell: cd /data/install/monitor/;sh zabbix_agent.install
+     - name: /etc/zabbix/scripts
+       file: dest=/etc/zabbix/scripts  mode=755 owner=root group=root state=directory
+     - name: copy redis_info.sh 
+       copy: src=scripts/redis_info.sh   dest=/etc/zabbix/scripts/ mode=755
+     - name: copy redis_port.py
+       copy: src=scripts/redis_port.py   dest=/etc/zabbix/scripts/ mode=755
+     - name: copy redis.conf
+       copy: src=redis.conf   dest=/etc/zabbix/zabbix_agentd.d/
+     - name:  netstat +s
+       file: name=/bin/netstat mode=6755 state=file
+     - name: zabbix-agent restarted
+       service: name=zabbix-agent state=restarted

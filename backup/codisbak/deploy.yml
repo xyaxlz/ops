@@ -1,0 +1,20 @@
+- name: deploy codisbak
+  hosts: all
+  user: op_DBA01
+  gather_facts: false
+  tasks:
+  - name: copy codis3_drc_backup.sh
+    copy: src=codis3_drc_backup.sh dest=/data/scripts/codis3_drc_backup.sh mode=755 owner=web group=web
+
+  - name: mkdir /data/backups/codis/
+    file: path="/data/backups/codis/" state="directory" owner=web group=web mode=755
+
+  - name: yum install mysql
+    yum: name="mysql" state="present" 
+
+  - name: remove codis3_drc_backup
+    lineinfile: dest=/var/spool/cron/web state=absent regexp="codis3_drc_backup"
+
+
+  - name: add codis3_drc_backup
+    cron: name="codis3_drc_backup" job="/data/scripts/codis3_drc_backup.sh >> /data/backups/codis/redis.log 2>&1" minute="1" hour="1" user=web 

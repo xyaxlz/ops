@@ -1,0 +1,446 @@
+#!/bin/bash
+
+# user defined
+#########################################################################
+intval=0
+top=10
+alarmnum=10
+command=1
+lockdir=`dirname $0`/../tmp/ngxtop_alarm_lock
+backdir=`dirname $0`/../tmp/ngxtop_alarm_back
+
+##########################################################################
+
+usage()
+{
+	echo
+	echo `basename $0` [-a alarm_min_num -i sleep_intval -t topN -c]
+	echo example: `basename $0` -a 1000 -i 2 -t 10
+	echo
+	exit 0;
+}
+
+while getopts a:ci:t: OPTION;do
+	case $OPTION in
+		a) alarmnum=$OPTARG;;
+		c) command=0;;
+		i) intval=$OPTARG;;
+		t) top=$OPTARG;;
+		*) usage;;
+	esac
+done
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+alarm_host2group()
+{
+	alarm_hosts=(
+	api.biz.pdtv.io=g-ops
+api.homer.panda.tv="xuhaibo;zhuyuchao;g-ops"
+api.homer.pdtv.io="zhuyuchao;xuhaibo"
+riven.pdtv.io="zhuyuchao;xuhaibo;g-ops"
+riven.panda.tv="zhuyuchao;xuhaibo;g-ops"
+bjac.riven.pdtv.io="zhuyuchao;xuhaibo;g-ops"
+api.roll.pdtv.io="g-ops;songpengfei"
+api.u.panda.tv="g-ops"
+ban1v.plat.bjac.pdtv.it="g-ops"
+ban.pdtv.io="g-ops"
+bloodstone.pdtv.io="g-ops;shenguanpu"
+bee.pdtv.io="g-ops;songpengfei;wangleiyun"
+bee.panda.tv="g-ops,songpengfei"
+br1v.plat.bjac.pdtv.it="g-ops"
+br2v.plat.bjac.pdtv.it="g-ops"
+buffon.pdtv.io="g-ops"
+count.pdtv.io="g-ops;zhangxiaopeng"
+homer.pdtv.io="g-ops"
+in.notice.panda.tv="g-ops"
+kafka1v.infra.bjac.pdtv.it="g-ops"
+kafka2v.infra.bjac.pdtv.it="g-ops"
+kafka4v.infra.bjac.pdtv.it="g-ops"
+kafka5v.infra.bjac.pdtv.it="g-ops"
+lenna.pdtv.io="g-ops;luyongjing"
+magi2v.plat.bjac.pdtv.it="g-ops"
+magi.pdtv.io="g-ops"
+mall1v.main.bjac.pdtv.it="g-ops"
+mall.panda.tv="g-ops;shenguanpu"
+mon.kafka.360.cn="g-ops"
+o.stat.panda.tv="g-ops"
+pandaren.corp.qihoo.net="g-ops"
+pda1v.main.bjac.pdtv.it="g-ops"
+panda.tv="g-ops"
+channel.panda.tv="g-ops;zhangdaiping;guorui;kangyongwei"
+pic.pdim.gs="g-ops"
+pw1v.infra.bjac.pdtv.it="g-ops"
+pw2v.infra.bjac.pdtv.it="g-ops"
+pw3v.infra.bjac.pdtv.it="g-ops"
+qstatic.pdtv.io="g-ops"
+qw2v.infra.bjac.pdtv.it="g-ops"
+rb1v.main.bjac.pdtv.it="g-ops"
+roll1v.plat.bjac.pdtv.it="g-ops"
+roll.panda.tv="g-ops;songpengfei;liyaguang;wangleiyun"
+room.villa.pdtv.io="g-ops"
+s5.pdim.gs="g-ops"
+s6.pdim.gs="g-ops"
+s7.pdim.gs="g-ops"
+s8.pdim.gs="g-ops"
+s9.pdim.gs="g-ops"
+sg1v.main.bjac.pdtv.it="g-ops"
+s.panda.tv="g-ops"
+static.pdim.gs="g-ops"
+trafficcop.pdtv.io="g-ops;luyongjing"
+itachi.pdtv.io="wuwanjie;songpengfei;luyongjing"
+u.panda.tv="g-ops;jiangshouchao"
+ws.panda.tv="g-ws"
+uprofile.pdtv.io="g-ops;shenguanpu"
+verify.panda.tv="g-ops;g-refresherbob"
+villa.pdtv.io="g-ops;zhengyuan"
+w1v.main.bjac.pdtv.it="g-ops"
+w2v.main.bjac.pdtv.it="g-ops"
+bikini.pdtv.io="g-ops;shenguanpu"
+www.panda.tv="g-ops;wangleiyun;liyaguang;songpengfei"
+search.pdtiv.io="xuhaibo;g-ops"
+holiday.pdtv.io="wangleiyun;g-ops"
+	)
+}
+
+#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+alarm_host2group
+
+find_host_alarm_group()
+{
+	SMS_SEND="g-ops"
+	#SMS_SEND="debug"
+	HN="$1"
+	for alarm_host in ${alarm_hosts[@]}
+	do
+		HOSTNAME_S="`echo ${alarm_host} | awk -F '=' '{print $1}'`"
+		SMS_GS="`echo ${alarm_host} | awk -F '=' '{print $2}'`"
+		if [ "${HN}" = "${HOSTNAME_S}" ] ; then
+			SMS_SEND="${SMS_GS}"
+			break
+		fi
+	done
+
+	echo "${SMS_SEND}"
+}
+
+COLOR_WHITE_BLACK="\033[40;37m"
+COLOR_YELLOW_BLACK="\033[40;33m"
+COLOR_BLUE_BLACK="\033[40;34m"
+COLOR_PURPLE_BLACK="\033[40;35m"
+COLOR_RED_BLACK="\033[40;31m"
+COLOR_YELLOW_YELLOW="\033[43;33m"
+COLOR_GREEN_WHITE="\033[47;32m"
+COLOR_RED_YELLOW="\033[43;31m"
+COLOR_RED_WHITE="\033[47;31m"
+
+ROOT=/data/nginxlogs
+#ROOT=/home/server_config/nginxlogs
+d=`date +%s`
+nowlog=`date -d "1970-01-01 UTC $d seconds" +"%Y%m/%d/access_%H.log"`
+
+#报警检查开关, cron状态下默认打开
+alarmflag=0
+#是否需要发警告
+_isAlarm=0
+_mail=
+
+AWK=`which awk`
+UNIQ=`which uniq`
+HEAD=`which head`
+CUT=`which cut`
+CAT=`which cat`
+TEE=`which tee`
+CP=`which cp`
+
+ngxtop_exit()
+{
+	rm -rf $HOME/ngxtop_tmp_$$.log $HOME/ngxtop_err_$$.log $HOME/ngxtop_ok_$$.log $HOME/ngxtop_ok_top10_$$ $HOME/ngxtop_refer_top10_$$ $HOME/ngxtop_errno_top10_$$ $HOME/ngxtop_errrequest_top10_$$
+	exit 0
+}
+
+#注册中断函数
+trap ngxtop_exit SIGINT
+trap ngxtop_exit SIGHUP
+trap ngxtop_exit SIGKILL
+trap ngxtop_exit SIGSTOP
+
+ngxtop_tmp_log()
+{
+	if [ -f $ROOT/$1/$nowlog ];then
+		#mv $ROOT/$1/$nowlog > $HOME/ngxtop_tmp_$$.log
+		tail -n 200000 $ROOT/$1/$nowlog > $HOME/ngxtop_tmp_$$.log
+	else
+		echo > $HOME/ngxtop_tmp_$$.log
+	fi
+}
+
+#保存错误的原始日志备查
+ngxtop_log_bak()
+{
+	new=$backdir/`date -d "1970-01-01 UTC $d seconds" +"%Y%m%d"`
+	mkdir -p $new
+	grep "HTTP/[1|2].[0|1]\" `$HEAD -n 1 $HOME/ngxtop_errno_top10_$$ | $AWK '{print $2}'`" $HOME/ngxtop_err_$$.log > $new/$1.`date -d "1970-01-01 UTC $d seconds" +"%H%M"`.log
+	#$CP -f $HOME/ngxtop_err_$$.log $new/$1.`date -d "1970-01-01 UTC $d seconds" +"%H%M"`.log
+}
+
+ngxtop_err_tmp_log()
+{
+	grep -E 'HTTP/(1|2).(1|0)" (5|6)..' $HOME/ngxtop_tmp_$$.log | grep -v '+0800] "-"' | grep -v -i '360SEC'> $HOME/ngxtop_err_$$.log
+	#grep -v 'HTTP/1.[1|0]" [200|301|302|400|404|403|499|60\d]' $HOME/ngxtop_tmp_$$.log | grep -v '+0800] "-"' > $HOME/ngxtop_err_$$.log
+	#grep -v 'HTTP/1.[1|0]" [200|301|302|404|403|499|60\d]' $HOME/ngxtop_tmp_$$.log > $HOME/ngxtop_err_$$.log
+}
+
+ngxtop_ok_tmp_log()
+{
+	grep -E 'HTTP/[1|2].[1|0]" (200|301|302)' $HOME/ngxtop_tmp_$$.log > $HOME/ngxtop_ok_$$.log
+}
+
+ngxtop_echo()
+{
+	echo -e $COLOR_RED_BLACK
+	echo -n $1
+	echo -e $COLOR_WHITE_BLACK
+}
+
+addMail()
+{
+	while read line; do
+		if [ "$line" = "" ];then continue;fi
+		_mail="$_mail $line"
+		if [ $_isAlarm -eq 0 -a `echo $line | $AWK '{print $1}'` -ge $alarmnum ];then
+			_isAlarm=1
+		fi
+	done < $1
+	_mail="$_mail\n"
+}
+
+ngxtop_ok_top10()
+{
+	if [ $alarmflag -ne 1 ];then
+		ngxtop_echo "normal request top10:"
+		$CAT $HOME/ngxtop_ok_$$.log | $AWK -F \" '{print $2}' | $CUT -d ? -f 1 | $AWK '{print $1,$2}' | sort | $UNIQ -c | sort -rg | $HEAD -n $top
+	else
+		_mail="$_mail\nnormal request top10:"
+		$CAT $HOME/ngxtop_ok_$$.log | $AWK -F \" '{print $2}' | $CUT -d ? -f 1 | $AWK '{print $1,$2}' | sort | $UNIQ -c | sort -rg | $HEAD -n $top > $HOME/ngxtop_ok_top10_$$
+		addMail $HOME/ngxtop_ok_top10_$$
+	fi
+}
+
+ngxtop_refer_top10()
+{
+	if [ $alarmflag -ne 1 ];then
+		ngxtop_echo "normal request reference top10:"
+		$CAT $HOME/ngxtop_ok_$$.log | $AWK -F \" '{print $4}' | $CUT -d ? -f 1  | $AWK '{print $1,$2}' | sort | $UNIQ -c | sort -rg | $HEAD -n $top
+	else
+		_mail="$_mail\nnormal request reference top10:"
+		$CAT $HOME/ngxtop_ok_$$.log | $AWK -F \" '{print $4}' | $CUT -d ? -f 1  | $AWK '{print $1,$2}' | sort | $UNIQ -c | sort -rg | $HEAD -n $top > $HOME/ngxtop_refer_top10_$$
+		addMail $HOME/ngxtop_refer_top10_$$
+	fi
+}
+
+ngxtop_errno_top10()
+{
+	if [ $alarmflag -ne 1 ];then
+		ngxtop_echo "errno top10:"
+		$CAT $HOME/ngxtop_err_$$.log | $AWK -F \" '{print $3}' | $AWK '{print $1}' | sort | $UNIQ -c | sort -rg | $HEAD -n $top
+	else
+		_mail="$_mail errno top10:"
+		$CAT $HOME/ngxtop_err_$$.log | $AWK -F \" '{print $3}' | $AWK '{print $1}' | sort | $UNIQ -c | sort -rg | $HEAD -n $top > $HOME/ngxtop_errno_top10_$$
+		addMail $HOME/ngxtop_errno_top10_$$
+	fi
+}
+
+ngxtop_errrequest_top10()
+{
+	if [ $alarmflag -ne 1 ];then
+		ngxtop_echo "err request top10:"
+		$CAT $HOME/ngxtop_err_$$.log | $AWK -F \" '{print $2}' | $CUT -d ? -f 1 | $AWK '{print $1,$2}' | sort | $UNIQ -c | sort -rg | $HEAD -n $top
+	else
+		_mail="$_mail err request top10:"
+		$CAT $HOME/ngxtop_err_$$.log | $AWK -F \" '{print $2}' | $CUT -d ? -f 1 | $AWK '{print $1,$2}' | sort | $UNIQ -c | sort -rg | $HEAD -n $top > $HOME/ngxtop_errrequest_top10_$$
+		addMail $HOME/ngxtop_errrequest_top10_$$
+	fi
+}
+
+ngxtop_ok()
+{
+	ngxtop_ok_tmp_log
+	ngxtop_ok_top10
+	ngxtop_refer_top10
+}
+
+ngxtop_err()
+{
+	ngxtop_err_tmp_log
+	ngxtop_errno_top10
+	#ngxtop_errrequest_top10
+}
+
+alarm()
+{
+	#$1 为hostname
+	#_hostname=$1
+	#echo `date`
+	#echo -e $_mail
+        _caller=$1
+	IDC=`hostname | awk -F'.' '{print $3}' | tr '[a-z]' '[A-Z]'`
+	if [ "$2" = "ok" ];then
+		title="[${IDC}]`echo $1 | $AWK -F / '{print $NF}' | sed 's/.panda.tv//' |sed 's/\.com//g'` ngx ok @`date +"%H:%M"`"
+	else
+		title="[${IDC}]`echo $1 | $AWK -F / '{print $NF}' | sed 's/.panda.tv//' |sed 's/\.com//g'` ngx `head -n 1 $HOME/ngxtop_errno_top10_$$ | awk '{print $2,"cnt:",$1}'` @`date +"%H:%M"`|$2"
+	fi
+	#echo -e "$title:$_mail" | `which mail` -s "$title" zhanghua@360.cn
+	#echo "http://alarms.ops.qihoo.net:8360/intfs/alarm_intf?group_name=game360_nginx_default&subject=`echo $title | tr \  +`&content=$title:$_mail"
+	#curl -s --retry 2 --retry-delay 10 "http://alarms.ops.qihoo.net:8360/intfs/alarm_intf?group_name=game360_nginx_default&subject=${title}&content=$_mail"
+	SMS_GROUPS=`find_host_alarm_group "$1"`
+	if [ -z "${SMS_GROUPS}" ] ; then
+		SMS_GROUPS="g-ops"
+	fi
+	SMS_GROUPS=(${SMS_GROUPS//,/ })
+	for SMS_GROUP in ${SMS_GROUPS[@]}
+	do
+		#[ "${SMS_GROUPS}" = "debug" ] || echo wget -O - -q -T 5 -t 2 "http://alarms.ops.qihoo.net:8360/intfs/alarm_intf?group_name=game360_nginx_${SMS_GROUP}&subject=${title}&content=$_mail"
+		wget -O - -q -T 5 -t 2 "http://shannon.pdtv.io:8360/msg/send?group_name=${SMS_GROUP}&subject=${title}_s4&_caller=${_caller}&content=$_mail" > /dev/null &
+	done
+}
+
+ngxtop_alarm_init()
+{
+	if [ ! -d $lockdir ];then
+		mkdir -p $lockdir
+	fi
+}
+
+ngxtop_alarm()
+{
+	if [ -f $lockdir/$1 ];then
+		_errnum=`cat $lockdir/$1`
+	else
+		_errnum=1
+	fi
+	if [ $_errnum -le 3 ];then
+		alarm "$1" $_errnum
+		echo `expr $_errnum + 1` > $lockdir/$1
+		ngxtop_log_bak "$1"
+	fi
+}
+
+ngxtop_alarm_clear()
+{
+	# 如果lock文件存在,并且需要清除,说明状态恢复
+	if [ -f $lockdir/$1 ];then
+		alarm $1 "ok"
+		rm -f $lockdir/$1
+	fi
+}
+
+
+ngxtop()
+{
+    #生成临时文件
+	ngxtop_tmp_log "$1"
+	_isAlarm=0
+	_mail=
+
+	if [ $alarmflag -ne 1 ];then
+	    clear
+	    echo -n [;
+	    echo -ne $COLOR_YELLOW_BLACK
+	    echo -n $1
+	    echo -ne $COLOR_WHITE_BLACK
+	    echo -n ] info:
+	fi
+
+	#ngxtop_ok
+	ngxtop_err
+
+	#####for test######
+	#echo -e $_mail
+
+	#只有后台执行才进行报警处理
+	if [ "$command" = "1" ];then
+		ngxtop_alarm_init
+		if [ $_isAlarm -eq 1 ];then
+			ngxtop_alarm "$1"
+		else
+			ngxtop_alarm_clear "$1"
+		fi
+	fi
+}
+
+content()
+{
+	ngxtop `echo $1 | $AWK -F / '{print $NF}'`
+	sleep $intval
+}
+
+check_alarm()
+{
+	for i in `find $ROOT -maxdepth 1 -mindepth 1 -type d |grep -v "pdtv.it" | egrep "(panda.tv|pdtv.io)" | egrep -v 'memcache|alpha|picasso|redis|mysql|demo|^beta'| grep -v "\*." | sort`;do
+		content "$i"
+	done
+}
+
+loop()
+{
+	if [ "$1" = "" ];then
+		while [ 1 -eq 1 ]; do
+			check_alarm
+		done
+	else
+		while [ 1 -eq 1 ]; do
+			content "$1"
+		done
+	fi
+}
+
+getHost()
+{
+	echo -e $COLOR_RED_BLACK
+	echo there are all the hosts:
+	m=1
+	echo -e $COLOR_YELLOW_BLACK
+	echo 0.all
+	for i in `find $ROOT -maxdepth 1 -mindepth 1 -type d | sort`;
+	do
+		dir=`echo $i | $AWK -F / '{print $NF}'`
+		echo $m.$dir
+		((m++))
+	done
+
+	echo -e $COLOR_WHITE_BLACK
+	echo -n please chioce one, default is all:
+	read NUM
+
+	if [ "$NUM" = "" -o "$NUM" = "0" ];
+	then
+		loop
+	else
+		m=1
+		for i in `find $ROOT -maxdepth 1 -mindepth 1 -type d | sort`;
+		do
+			if [ "$m" = "$NUM" ];then
+				dir=`echo $i | $AWK -F / '{print $NF}'`
+					loop $dir
+					break
+			fi
+			((m++))
+		done
+	fi
+}
+
+main()
+{
+	if [ "$command" = "1" ];then
+		alarmflag=1
+		check_alarm
+	else
+		if [ "$intval" = "0" ];then
+			intval=5
+		fi
+		getHost
+	fi
+	ngxtop_exit
+}
+
+main

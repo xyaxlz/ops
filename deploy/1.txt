@@ -1,0 +1,3 @@
+ansible -i add all -m copy -a "src=./dd.panda.tv.conf dest=/usr/local/nginx/conf/include/" -k -K -s
+
+ansible -i add all -m  shell -a "/etc/init.d/nginx reload" -k -K -s

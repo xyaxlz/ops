@@ -1,0 +1,18 @@
+{% include 'nginx_http.j2' %}
+
+upstream backend_server_api {
+    server 127.0.0.1:8080;
+}
+
+server {
+    listen 8360;
+
+    server_name lapi.jiecaojingxuan.com api.gate.chongdingdahui.com;
+
+    {% include 'nginx_server.j2' %}
+
+    location / {
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_pass http://backend_server_api;
+    }
+}

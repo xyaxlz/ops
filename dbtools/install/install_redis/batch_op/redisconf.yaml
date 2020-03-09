@@ -1,0 +1,9 @@
+- name: redis dbback
+  hosts: bjac_redis
+  tasks:
+     - name: /data/install
+       file: dest=/data/install  mode=755 owner=root group=root state=directory
+     - name: copy config_set.sh
+       copy: src=config_set.sh   dest=/data/install
+     - name: sh config_set.sh
+       shell: cd /data/install; sh config_set.sh

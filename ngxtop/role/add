@@ -1,0 +1,12 @@
+[add]
+10.20.0.26 id=s2
+10.20.0.30 id=s4
+10.20.0.71 id=s5
+10.20.0.72 id=s6
+log1v.infra.bjac.pdtv.it id=log1v
+log2v.infra.bjac.pdtv.it id=log2v
+log3v.infra.bjac.pdtv.it id=log3v
+log4v.infra.bjac.pdtv.it id=log4v
+log5v.infra.bjac.pdtv.it id=log5v
+log6v.infra.bjac.pdtv.it id=log6v
+log7v.infra.bjac.pdtv.it id=log7v

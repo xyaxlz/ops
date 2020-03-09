@@ -1,0 +1,28 @@
+INFRA-RIVEND-42771743
+nslookup[INFRA-RIVEND-42771743.cn-north-1.elb.amazonaws.com.cn]
+
+INFRA-rivend-1753023542
+nslookup[INFRA-rivend-1753023542.cn-north-1.elb.amazonaws.com.cn]
+
+internal-INFRA-rivenc-552766824
+nslookup[internal-INFRA-rivenc-552766824.cn-north-1.elb.amazonaws.com.cn]
+
+internal-INFRA-RIVENC-1552348038
+nslookup[internal-INFRA-RIVENC-1552348038.cn-north-1.elb.amazonaws.com.cn]
+
+
+trigger
+
+{HOST.NAME} INFRA-rivenc change
+{bjza_infra_rivenops:nslookup[internal-INFRA-rivenc-552766824.cn-north-1.elb.amazonaws.com.cn].diff()}=1
+
+{HOST.NAME}  INFRA-RIVENC change
+{bjza_infra_rivenops:nslookup[internal-INFRA-RIVENC-1552348038.cn-north-1.elb.amazonaws.com.cn].diff()}=1
+
+
+{HOST.NAME} INFRA-rivend change
+{bjza_infra_rivenops:nslookup[INFRA-rivend-1753023542.cn-north-1.elb.amazonaws.com.cn].diff()}=1
+
+
+{HOST.NAME} INFRA-RIVEND elb change
+{bjza_infra_rivenops:nslookup[INFRA-RIVEND-42771743.cn-north-1.elb.amazonaws.com.cn].diff()}=1

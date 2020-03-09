@@ -1,0 +1,7 @@
+echo "Configuring interface rules..."
+${IPTABLES} -A INPUT -s 127.0.0.1/32 -j ACCEPT
+${IPTABLES} -A INPUT -d 127.0.0.1/32 -j ACCEPT
+${IPTABLES} -A INPUT -s 255.255.255.255/32 -j DROP
+
+#${IPTABLES} -A INPUT -p tcp --syn -m limit --limit 1/s --limit-burst 10 -j ACCEPT
+#${IPTABLES} -A INPUT -p tcp --tcp-flags SYN,ACK,FIN,RST RST -m limit --limit 10/s -j ACCEPT

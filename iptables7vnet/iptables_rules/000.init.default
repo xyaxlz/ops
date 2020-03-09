@@ -1,0 +1,3 @@
+${IPTABLES} -t filter -P INPUT DROP
+${IPTABLES} -t filter -P FORWARD DROP
+

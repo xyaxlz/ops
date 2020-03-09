@@ -1,0 +1,21 @@
+__publishs:
+    sdk_local: !P.publish
+        pkg     : !P.pkg &sdk_pkg
+            name    : "dbtools"
+            root    : "./src"
+            exclude :
+                - ".pyc"
+                - ".git"
+        deploy  : !P.deploy &sdk_deploy
+            user    : "search"
+            root    : "/home/q/tools"
+        host: !P.host
+            include:
+                - "127.0.0.1"
+
+    sdk_online: !P.publish
+        pkg     : *sdk_pkg
+        deploy  : *sdk_deploy
+        host    : !P.host
+            include:
+                - "@/home/q/tools/game_team/svr/online-infra-mha-bjac.svr"

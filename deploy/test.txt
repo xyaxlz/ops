@@ -1,0 +1,5 @@
+##dd服务test url
+
+curl -H 'host:dd.panda.tv' "http://127.0.0.1/mini_window_punch.gif?event=click"
+
+https 需要绑定hosts

@@ -1,0 +1,40 @@
+- name: centos7 iptables init
+  hosts: '{{hosts}}'
+  tasks:
+
+#  - name: stop firewalld.service
+#    shell: systemctl stop firewalld.service
+#
+#  - name: disable firewalld.service
+#    shell: systemctl disable firewalld.service
+#
+#  - name: disable firewalld.service
+#    shell:  yum remove firewalld -y
+
+      #  - name: yum iptables
+      #yum: name=iptables-services state=latest
+
+  - name: iptables-devel
+    yum: name=iptables-devel state=latest
+
+  - name: mkfile iptables_rules
+    file: path=/usr/local/etc/iptables_rules/ state=directory mode=755 owner=root group=root
+
+  - name: copy iptables_rules
+    copy: src=iptables_rules/ dest=/usr/local/etc/iptables_rules/
+
+  - name: iptables.init bak
+    shell: \mv   /usr/libexec/iptables/iptables.init  /usr/libexec/iptables/iptables.init.`date +%Y%m%d%H%M`
+
+  - name: copy iptables.init
+    copy: src=iptables  dest=/usr/libexec/iptables/iptables.init
+
+  - name: chmod 755 iptables.init
+    file: path=/usr/libexec/iptables/iptables.init mode=0755
+
+  - name: iptables enable
+    service: name=iptables enabled=yes
+
+  - name: iptables restart
+    service: name=iptables  state=restarted
+

@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# 检查输入参数
+if [ $# -ne 1 ]; then
+  echo "USAGE: $0 port"
+  echo "e.g.: uc_codis_bak.sh 6570"
+  exit 1
+fi
+
+# 获取端口
+PORT=$1
+
+if [ -z $PORT ]; then
+  echo "codis server port is empty"
+  exit 1
+fi
+
+#数据目录
+dir="/data/server/codis3_drc/redis/data/"
+
+#bin
+bin="/data/server/codis3_drc/bin"
+
+#备份目录
+backup_dir="/data/backups/codis/"
+
+if [ ! -d ${backup_dir} ]; then
+  mkdir -p ${backup_dir}
+fi
+
+#global backup file name
+file_name="redis-${PORT}-dump.rdb"
+
+#section backup time
+section=`date +%y%m%d%H`
+
+# check redis role
+role=$($bin/redis-cli -p ${PORT} "info" | grep "role" | awk -F":" '{print $2}')
+role_str=$(echo $role | tr -d '\r')
+if [[ $role_str != "slave" ]]; then
+  echo "redis instance is not slave"
+  exit 1
+fi
+
+#execute backup
+$bin/redis-cli -p ${PORT} BGSAVE
+
+/bin/cp -f $dir/$file_name $backup_dir/$file_name.${section}
+/usr/bin/find $backup_dir -name "redis-*-dump\.rdb\.*" -type f -ctime +1 | xargs -n 1 rm -f

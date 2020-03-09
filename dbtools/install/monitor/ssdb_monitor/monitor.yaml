@@ -1,0 +1,10 @@
+- name: Test the hostname file
+  hosts: aws_ssdb
+  tasks:
+     - name: /data/install/monitor/
+       file: dest=/data/install/monitor mode=755 owner=root group=root state=directory    
+     - name: copy ssdb_monitor
+       copy: src=/data/install/monitor/aws_ssdb_monitor   dest=/data/install/monitor
+     - name:  init.sh
+       shell: cd  /data/install/monitor/aws_ssdb_monitor;sh init.sh 
+     

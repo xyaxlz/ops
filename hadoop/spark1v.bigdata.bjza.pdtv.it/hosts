@@ -1,0 +1,13 @@
+127.0.0.1 localhost 
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+10.120.6.240  hive1v.infra.bjza.pdtv.it
+10.120.9.230  hive2v.infra.bjza.pdtv.it
+10.120.6.65   hive3v.infra.bjza.pdtv.it
+10.120.11.116 hive4v.infra.bjza.pdtv.it
+10.120.15.4   hive5v.infra.bjza.pdtv.it
+10.120.5.233  hive6v.infra.bjza.pdtv.it
+10.120.7.220  hive7v.infra.bjza.pdtv.it
+10.120.3.228  hive8v.infra.bjza.pdtv.it
+10.120.14.112 hive9v.infra.bjza.pdtv.it
+10.120.4.76   hive10v.infra.bjza.pdtv.it
+

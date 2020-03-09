@@ -1,0 +1,9 @@
+#${IPTABLES} -A INPUT -p tcp --syn -m limit --limit 1/s --limit-burst 10 -j ACCEPT
+#${IPTABLES} -A INPUT -p tcp --tcp-flags SYN,ACK,FIN,RST RST -m limit --limit 10/s -j ACCEPT
+
+# allow 2 http connections per client host
+#${IPTABLES} -A INPUT -p tcp --syn -m multiport --dport 80,443 -m connlimit --connlimit-above 2 -j DROP
+
+# limit the nr of parallel http requests to 100 per class C sized network (24 bit netmask)
+#${IPTABLES} -A INPUT -p tcp --syn -m multiport --dport 80,443 -m connlimit --connlimit-above 100 --connlimit-mask 24 -j DROP
+

@@ -1,0 +1,2 @@
+${IPTABLES} -A INPUT -p tcp -m multiport --dport 843,993,3389 -j ACCEPT
+

@@ -1,0 +1,6 @@
+127.0.0.1 localhost
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+10.210.27.95  kafka1v.infra.bjae.cddh.it
+10.210.27.99  kafka2v.infra.bjae.cddh.it
+10.210.27.98  kafka3v.infra.bjae.cddh.it
