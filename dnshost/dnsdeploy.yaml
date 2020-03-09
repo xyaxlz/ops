@@ -1,7 +1,0 @@
-- name: dns deploy
-  hosts: '{{ hosts }}'
-  tasks:
-   - name: copy {{dnsfile}}
-     copy: src={{dnsfile}} dest=/tmp/
-   - name: sh {{dnsfile}}
-     shell: sh /tmp/{{dns}}
