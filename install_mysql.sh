@@ -82,7 +82,7 @@ chkconfig mysqld on
 ####删除空账号，创建备份账号,设置root密码
 $MYSQLDIR/mysql -S /tmp/mysql_${DBPORT}.sock  -e "delete from mysql.user where user='';"
 $MYSQLDIR/mysql -S /tmp/mysql_${DBPORT}.sock   -e "delete from mysql.user where host='';"
-$MYSQLDIR/mysql -S /tmp/mysql_${DBPORT}.sock   -e "GRANT SELECT,LOCK TABLES,RELOAD,SUPER,EVENT,EXECUTE ON *.* TO 'dbback'@'localhost' IDENTIFIED BY 'dbback';"
+$MYSQLDIR/mysql -S /tmp/mysql_${DBPORT}.sock   -e "GRANT SELECT,LOCK TABLES,RELOAD,SUPER,EVENT,EXECUTE ON *.* TO 'dbback'@'localhost' IDENTIFIED BY 'xxx';"
 $MYSQLDIR/mysqladmin -S /tmp/mysql_${DBPORT}.sock   password  $DBPWD
 
 if [[ $DBPWD == '' ]];then
